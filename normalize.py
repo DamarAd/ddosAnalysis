@@ -30,14 +30,55 @@ dataframe['flow_packets'] = dataframe['flow_packets'].astype(np.float64).replace
 
 array = dataframe.values
 
+# create fungsi array
 def dis(arr):
     return pd.DataFrame(arr)
 
+# Load data fitur - target
 X = array[:,:-1]
 Y = array[:,78]
 
-#normalization of categoric atribute
+# normalisasi atribut categoric
 from sklearn.preprocessing import LabelEncoder
 encode = LabelEncoder()
-
 rescaledY =  encode.fit_transform(Y)
+
+# normalisasi atribut numeric
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+rescaledX = scaler.fit_transform(X)
+
+'''
+print("SEBELUM NORMALISASI \n" , dis(X).head())
+print("\n")
+print("SESUDAH NORMALISASI \n" , dis(rescaledX).head())
+'''
+
+#Split data
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
+
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.feature_selection import SelectFromModel
+
+# Random forest excec
+rfc = RandomForestClassifier(n_estimators=1000, random_state=0, n_jobs=-1)
+rfc.fit(X_train, Y_train)
+
+# Print fitur beserta skor randomforest
+for feature in zip(col_names, rfc.feature_importances_):
+    print(feature)
+
+# Set threshold
+sfm = SelectFromModel(rfc, threshold=0.005)
+sfm.fit(X_train, Y_train)
+
+# Print fitur yang penting
+for selection in sfm.get_support(indices=True):
+    print(col_names[selection])
+
+# Transform data ke dataset baru yang telah diseleksi fiturnya
+X_important_train = sfm.transform(X_train)
+X_important_test = sfm.transform(X_test)
