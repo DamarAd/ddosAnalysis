@@ -30,8 +30,14 @@ dataframe['flow_packets'] = dataframe['flow_packets'].astype(np.float64).replace
 
 array = dataframe.values
 
-
 def dis(arr):
     return pd.DataFrame(arr)
 
-print(dis(array))
+X = array[:,:-1]
+Y = array[:,78]
+
+#normalization of categoric atribute
+from sklearn.preprocessing import LabelEncoder
+encode = LabelEncoder()
+
+rescaledY =  encode.fit_transform(Y)
