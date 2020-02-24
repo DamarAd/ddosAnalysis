@@ -64,10 +64,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import SelectFromModel
 
 # Random forest excec
-rfc = RandomForestClassifier(n_estimators=1000, random_state=0, n_jobs=-1)
+rfc = RandomForestClassifier(n_estimators=1000, n_jobs=-1)
 rfc.fit(X_train, Y_train)
 
 # Print fitur beserta skor randomforest
+print("SKOR RANDOM FOREST")
 for feature in zip(col_names, rfc.feature_importances_):
     print(feature)
 
@@ -76,9 +77,35 @@ sfm = SelectFromModel(rfc, threshold=0.005)
 sfm.fit(X_train, Y_train)
 
 # Print fitur yang penting
+print("IMPORTANCE FITUR")
 for selection in sfm.get_support(indices=True):
     print(col_names[selection])
 
 # Transform data ke dataset baru yang telah diseleksi fiturnya
 X_important_train = sfm.transform(X_train)
 X_important_test = sfm.transform(X_test)
+
+# random forest dengan importance fitur
+rfc_important = RandomForestClassifier(n_estimators=1000, n_jobs=-1)
+
+# Train klasifikasi baru dengan importance fitur
+rfc_important.fit(X_important_train, Y_train)
+
+from sklearn.metrics import accuracy_score
+
+# Apply keselururhan fitur
+Y_pred = rfc.predict(X_test)
+
+# View akurasi seluruh fitur
+full_feat = accuracy_score(Y_test, Y_pred)
+print("FULL FEATURE ACCURATION")
+print(full_feat)
+
+# Apply keselurahan fitur
+Y_important_pred = rfc_important.predict(X_important_test)
+
+# View akurasi importance fitur
+importance_feat = accuracy_score(Y_test, Y_important_pred)
+print("IMPORTANCE FEATURE ACCURATION")
+print(importance_feat)
+
