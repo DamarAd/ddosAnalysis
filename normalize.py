@@ -104,7 +104,7 @@ print(full_feat)
 # Apply keselurahan fitur
 Y_important_pred = rfc_important.predict(X_important_test)
 
-# View akurasi importance fitur
+# View akurasi importance fitur dulu
 importance_feat = accuracy_score(Y_test, Y_important_pred)
 print("IMPORTANCE FEATURE ACCURATION")
 print(importance_feat)
